@@ -14,6 +14,7 @@ Tid universalTid=0;
 //currently running thread
 Tid runningThread=0;
 struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead);
+void pushQueue(struct ThrdCtlBlk ** queueHead, struct ThrdCtlBlk *pushBlock);
 
 Tid 
 ULT_CreateThread(void (*fn)(void *), void *parg)
@@ -60,12 +61,8 @@ Tid ULT_Yield(Tid wantTid)
   currBlock->threadContext=currThread;
 
   /*stick thread(TCB) on the ready queue*/
-  if(queueHead!=NULL)
-  {
-  currBlock->tcbPointerTail=queueHead;  
-  }
-  queueHead=currBlock;
-  
+  pushQueue(&queueHead,currBlock);
+   
   /*decide on new thread to run*/
   struct ThrdCtlBlk *setBlock;
   setBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
@@ -91,16 +88,18 @@ Tid ULT_DestroyThread(Tid tid)
 
 struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
 {
-       // struct ThrdCtlBlk *tempBlock;
-       struct ThrdCtlBlk *tempBlock;
+       //pointer to ThrdCtlBlk
+	struct ThrdCtlBlk *tempBlock;
+       //struct ThrdCtlBlk *adjustPointer;
        /*allocate memory */
        tempBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
        tempBlock=*queueHead;
-
+       
 	  while(tempBlock!=NULL)
           {
         	if(tempBlock->tid==searchTid)
-		{
+		{       
+                       // tempBlock->tcbPointerHead->
 			return tempBlock; 
 		}
     		else
@@ -113,5 +112,10 @@ struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
            	
 }
 
-
+void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk *pushBlock)
+{
+	pushBlock->tcbPointerTail=*queueHead;
+//	pushBlock->tcbPointerHead=queueHead;
+	*queueHead=pushBlock;	
+}
 
