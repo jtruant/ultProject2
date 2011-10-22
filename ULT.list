@@ -1,0 +1,522 @@
+GAS LISTING /tmp/ccpIrlFj.s 			page 1
+
+
+   1              		.file	"ULT.c"
+   9              	.Ltext0:
+  10              		.cfi_sections	.debug_frame
+  11              		.section	.rodata
+  12              		.align 4
+  15              	ULT_ANY:
+  16 0000 FFFFFFFF 		.long	-1
+  17              		.align 4
+  20              	ULT_SELF:
+  21 0004 FEFFFFFF 		.long	-2
+  22              		.align 4
+  25              	ULT_INVALID:
+  26 0008 FDFFFFFF 		.long	-3
+  27              		.align 4
+  30              	ULT_NONE:
+  31 000c FCFFFFFF 		.long	-4
+  32              		.align 4
+  35              	ULT_NOMORE:
+  36 0010 FBFFFFFF 		.long	-5
+  37              		.align 4
+  40              	ULT_NOMEMORY:
+  41 0014 FAFFFFFF 		.long	-6
+  42              		.align 4
+  45              	ULT_FAILED:
+  46 0018 F9FFFFFF 		.long	-7
+  47              	.globl queueHead
+  48              		.bss
+  49              		.align 4
+  52              	queueHead:
+  53 0000 00000000 		.zero	4
+  54              	.globl universalTid
+  55              		.align 4
+  58              	universalTid:
+  59 0004 00000000 		.zero	4
+  60              	.globl runningThread
+  61              		.align 4
+  64              	runningThread:
+  65 0008 00000000 		.zero	4
+  66              		.section	.rodata
+  67              	.LC0:
+  68 001c 554C542E 		.string	"ULT.c"
+  68      6300
+  69              	.LC1:
+  70 0022 3000     		.string	"0"
+  71              		.text
+  72              	.globl ULT_CreateThread
+  74              	ULT_CreateThread:
+  75              	.LFB1:
+  76              		.file 1 "ULT.c"
+   1:ULT.c         **** #include <assert.h>
+   2:ULT.c         **** #include <stdlib.h>
+   3:ULT.c         **** #include <stdio.h>
+   4:ULT.c         **** #include <string.h>
+   5:ULT.c         **** /* We want the extra information from these definitions */
+   6:ULT.c         **** #ifndef __USE_GNU
+   7:ULT.c         **** #define __USE_GNU
+   8:ULT.c         **** #endif /* __USE_GNU */
+GAS LISTING /tmp/ccpIrlFj.s 			page 2
+
+
+   9:ULT.c         **** #include <ucontext.h>
+  10:ULT.c         **** #include "ULT.h"
+  11:ULT.c         **** struct ThrdCtlBlk *queueHead=NULL;
+  12:ULT.c         **** //number of existing threads
+  13:ULT.c         **** Tid universalTid=0;
+  14:ULT.c         **** //currently running thread
+  15:ULT.c         **** Tid runningThread=0;
+  16:ULT.c         **** struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead);
+  17:ULT.c         **** 
+  18:ULT.c         **** Tid 
+  19:ULT.c         **** ULT_CreateThread(void (*fn)(void *), void *parg)
+  20:ULT.c         **** {
+  77              		.loc 1 20 0
+  78              		.cfi_startproc
+  79 0000 55       		pushl	%ebp
+  80              	.LCFI0:
+  81              		.cfi_def_cfa_offset 8
+  82 0001 89E5     		movl	%esp, %ebp
+  83              		.cfi_offset 5, -8
+  84              	.LCFI1:
+  85              		.cfi_def_cfa_register 5
+  86 0003 83EC18   		subl	$24, %esp
+  21:ULT.c         ****   assert(0); /* TBD */
+  87              		.loc 1 21 0
+  88 0006 C744240C 		movl	$__PRETTY_FUNCTION__.2787, 12(%esp)
+  88      44000000 
+  89 000e C7442408 		movl	$21, 8(%esp)
+  89      15000000 
+  90 0016 C7442404 		movl	$.LC0, 4(%esp)
+  90      1C000000 
+  91 001e C7042422 		movl	$.LC1, (%esp)
+  91      000000
+  92 0025 E8FCFFFF 		call	__assert_fail
+  92      FF
+  93              		.cfi_endproc
+  94              	.LFE1:
+  96              		.section	.rodata
+  97              	.LC2:
+  98 0024 4A756D70 		.string	"Jump barrier "
+  98      20626172 
+  98      72696572 
+  98      2000
+  99              		.text
+ 100              	.globl ULT_Yield
+ 102              	ULT_Yield:
+ 103              	.LFB2:
+  22:ULT.c         ****   return ULT_FAILED;
+  23:ULT.c         **** }
+  24:ULT.c         **** 
+  25:ULT.c         **** 
+  26:ULT.c         **** Tid ULT_Yield(Tid wantTid)
+  27:ULT.c         **** {
+ 104              		.loc 1 27 0
+ 105              		.cfi_startproc
+ 106 002a 55       		pushl	%ebp
+ 107              	.LCFI2:
+ 108              		.cfi_def_cfa_offset 8
+GAS LISTING /tmp/ccpIrlFj.s 			page 3
+
+
+ 109 002b 89E5     		movl	%esp, %ebp
+ 110              		.cfi_offset 5, -8
+ 111              	.LCFI3:
+ 112              		.cfi_def_cfa_register 5
+ 113 002d 57       		pushl	%edi
+ 114 002e 56       		pushl	%esi
+ 115 002f 53       		pushl	%ebx
+ 116 0030 81EC8C01 		subl	$396, %esp
+ 116      0000
+  28:ULT.c         ****   
+  29:ULT.c         ****   if(wantTid>ULT_MAX_THREADS)
+ 117              		.loc 1 29 0
+ 118 0036 817D0800 		cmpl	$1024, 8(%ebp)
+ 118      040000
+ 119 003d 7E0A     		jle	.L3
+ 120              		.cfi_offset 3, -20
+ 121              		.cfi_offset 6, -16
+ 122              		.cfi_offset 7, -12
+  30:ULT.c         ****   {   
+  31:ULT.c         ****        /*The tid does not correspond to a valid thread*/ 
+  32:ULT.c         ****      return ULT_INVALID; 
+ 123              		.loc 1 32 0
+ 124 003f A1080000 		movl	ULT_INVALID, %eax
+ 124      00
+ 125 0044 E9200100 		jmp	.L4
+ 125      00
+ 126              	.L3:
+  33:ULT.c         ****   }
+  34:ULT.c         ****   else if((queueHead==NULL) && (wantTid==ULT_ANY))//if queue empty and ULT_any then no-op
+ 127              		.loc 1 34 0
+ 128 0049 A1000000 		movl	queueHead, %eax
+ 128      00
+ 129 004e 85C0     		testl	%eax, %eax
+ 130 0050 7514     		jne	.L5
+ 131              		.loc 1 34 0 is_stmt 0 discriminator 1
+ 132 0052 A1000000 		movl	ULT_ANY, %eax
+ 132      00
+ 133 0057 394508   		cmpl	%eax, 8(%ebp)
+ 134 005a 750A     		jne	.L5
+  35:ULT.c         ****   {
+  36:ULT.c         ****        return ULT_NONE;
+ 135              		.loc 1 36 0 is_stmt 1
+ 136 005c A10C0000 		movl	ULT_NONE, %eax
+ 136      00
+ 137 0061 E9030100 		jmp	.L4
+ 137      00
+ 138              	.L5:
+  37:ULT.c         ****   
+  38:ULT.c         ****   }
+  39:ULT.c         ****   else if(wantTid == ULT_SELF)
+ 139              		.loc 1 39 0
+ 140 0066 A1040000 		movl	ULT_SELF, %eax
+ 140      00
+ 141 006b 394508   		cmpl	%eax, 8(%ebp)
+ 142 006e 7508     		jne	.L6
+  40:ULT.c         ****   {
+  41:ULT.c         **** 	wantTid = runningThread;
+GAS LISTING /tmp/ccpIrlFj.s 			page 4
+
+
+ 143              		.loc 1 41 0
+ 144 0070 A1000000 		movl	runningThread, %eax
+ 144      00
+ 145 0075 894508   		movl	%eax, 8(%ebp)
+ 146              	.L6:
+  42:ULT.c         ****   }
+  43:ULT.c         ****    
+  44:ULT.c         ****   /*assert(0);  TBD */
+  45:ULT.c         ****   /*return ULT_FAILED;*/
+  46:ULT.c         ****   ucontext_t currThread;
+  47:ULT.c         **** 
+  48:ULT.c         ****   /*build TCB*/
+  49:ULT.c         ****   struct ThrdCtlBlk *currBlock;
+  50:ULT.c         ****   /*allocate memory */
+  51:ULT.c         ****   currBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
+ 147              		.loc 1 51 0
+ 148 0078 C7042468 		movl	$360, (%esp)
+ 148      010000
+ 149 007f E8FCFFFF 		call	malloc
+ 149      FF
+ 150 0084 8945E4   		movl	%eax, -28(%ebp)
+  52:ULT.c         ****   currBlock->tid=universalTid;
+ 151              		.loc 1 52 0
+ 152 0087 8B150000 		movl	universalTid, %edx
+ 152      0000
+ 153 008d 8B45E4   		movl	-28(%ebp), %eax
+ 154 0090 8910     		movl	%edx, (%eax)
+  53:ULT.c         ****   currBlock->tcbPointerTail=NULL;
+ 155              		.loc 1 53 0
+ 156 0092 8B45E4   		movl	-28(%ebp), %eax
+ 157 0095 C7806401 		movl	$0, 356(%eax)
+ 157      00000000 
+ 157      0000
+  54:ULT.c         ****   currBlock->tcbPointerHead=NULL;
+ 158              		.loc 1 54 0
+ 159 009f 8B45E4   		movl	-28(%ebp), %eax
+ 160 00a2 C7806001 		movl	$0, 352(%eax)
+ 160      00000000 
+ 160      0000
+  55:ULT.c         ****   /*get context and set the context of the tcb to that context*/ 
+  56:ULT.c         ****   getcontext(&currThread);
+ 161              		.loc 1 56 0
+ 162 00ac 8D8584FE 		leal	-380(%ebp), %eax
+ 162      FFFF
+ 163 00b2 890424   		movl	%eax, (%esp)
+ 164 00b5 E8FCFFFF 		call	getcontext
+ 164      FF
+  57:ULT.c         ****   
+  58:ULT.c         ****   /*change instruction pointer JUMP*/
+  59:ULT.c         ****   currThread.uc_mcontext.gregs[REG_EIP]=currThread.uc_mcontext.gregs[REG_EIP]+74;
+ 165              		.loc 1 59 0
+ 166 00ba 8B85D0FE 		movl	-304(%ebp), %eax
+ 166      FFFF
+ 167 00c0 83C04A   		addl	$74, %eax
+ 168 00c3 8985D0FE 		movl	%eax, -304(%ebp)
+ 168      FFFF
+  60:ULT.c         ****   currBlock->threadContext=currThread;
+GAS LISTING /tmp/ccpIrlFj.s 			page 5
+
+
+ 169              		.loc 1 60 0
+ 170 00c9 8B45E4   		movl	-28(%ebp), %eax
+ 171 00cc 8D5804   		leal	4(%eax), %ebx
+ 172 00cf 8D9584FE 		leal	-380(%ebp), %edx
+ 172      FFFF
+ 173 00d5 B8570000 		movl	$87, %eax
+ 173      00
+ 174 00da 89DF     		movl	%ebx, %edi
+ 175 00dc 89D6     		movl	%edx, %esi
+ 176 00de 89C1     		movl	%eax, %ecx
+ 177 00e0 F3A5     		rep movsl
+  61:ULT.c         **** 
+  62:ULT.c         ****   /*stick thread(TCB) on the ready queue*/
+  63:ULT.c         ****   if(queueHead!=NULL)
+ 178              		.loc 1 63 0
+ 179 00e2 A1000000 		movl	queueHead, %eax
+ 179      00
+ 180 00e7 85C0     		testl	%eax, %eax
+ 181 00e9 740F     		je	.L7
+  64:ULT.c         ****   {
+  65:ULT.c         ****   currBlock->tcbPointerTail=queueHead;  
+ 182              		.loc 1 65 0
+ 183 00eb 8B150000 		movl	queueHead, %edx
+ 183      0000
+ 184 00f1 8B45E4   		movl	-28(%ebp), %eax
+ 185 00f4 89906401 		movl	%edx, 356(%eax)
+ 185      0000
+ 186              	.L7:
+  66:ULT.c         ****   }
+  67:ULT.c         ****   queueHead=currBlock;
+ 187              		.loc 1 67 0
+ 188 00fa 8B45E4   		movl	-28(%ebp), %eax
+ 189 00fd A3000000 		movl	%eax, queueHead
+ 189      00
+  68:ULT.c         ****   
+  69:ULT.c         ****   /*decide on new thread to run*/
+  70:ULT.c         ****   struct ThrdCtlBlk *setBlock;
+  71:ULT.c         ****   setBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
+ 190              		.loc 1 71 0
+ 191 0102 C7042468 		movl	$360, (%esp)
+ 191      010000
+ 192 0109 E8FCFFFF 		call	malloc
+ 192      FF
+ 193 010e 8945E0   		movl	%eax, -32(%ebp)
+  72:ULT.c         ****   
+  73:ULT.c         ****   setBlock=fromQueue(wantTid,&queueHead); 
+ 194              		.loc 1 73 0
+ 195 0111 C7442404 		movl	$queueHead, 4(%esp)
+ 195      00000000 
+ 196 0119 8B4508   		movl	8(%ebp), %eax
+ 197 011c 890424   		movl	%eax, (%esp)
+ 198 011f E8FCFFFF 		call	fromQueue
+ 198      FF
+ 199 0124 8945E0   		movl	%eax, -32(%ebp)
+  74:ULT.c         ****   currThread=setBlock->threadContext;
+ 200              		.loc 1 74 0
+ 201 0127 8B45E0   		movl	-32(%ebp), %eax
+GAS LISTING /tmp/ccpIrlFj.s 			page 6
+
+
+ 202 012a 8D9584FE 		leal	-380(%ebp), %edx
+ 202      FFFF
+ 203 0130 8D5804   		leal	4(%eax), %ebx
+ 204 0133 B8570000 		movl	$87, %eax
+ 204      00
+ 205 0138 89D7     		movl	%edx, %edi
+ 206 013a 89DE     		movl	%ebx, %esi
+ 207 013c 89C1     		movl	%eax, %ecx
+ 208 013e F3A5     		rep movsl
+  75:ULT.c         ****   setcontext(&currThread);
+ 209              		.loc 1 75 0
+ 210 0140 8D8584FE 		leal	-380(%ebp), %eax
+ 210      FFFF
+ 211 0146 890424   		movl	%eax, (%esp)
+ 212 0149 E8FCFFFF 		call	setcontext
+ 212      FF
+  76:ULT.c         ****   printf("Jump barrier \n");
+ 213              		.loc 1 76 0
+ 214 014e C7042424 		movl	$.LC2, (%esp)
+ 214      000000
+ 215 0155 E8FCFFFF 		call	puts
+ 215      FF
+  77:ULT.c         ****   runningThread=setBlock->tid;
+ 216              		.loc 1 77 0
+ 217 015a 8B45E0   		movl	-32(%ebp), %eax
+ 218 015d 8B00     		movl	(%eax), %eax
+ 219 015f A3000000 		movl	%eax, runningThread
+ 219      00
+  78:ULT.c         ****   
+  79:ULT.c         ****   return runningThread;
+ 220              		.loc 1 79 0
+ 221 0164 A1000000 		movl	runningThread, %eax
+ 221      00
+ 222              	.L4:
+  80:ULT.c         ****   
+  81:ULT.c         ****   
+  82:ULT.c         ****  
+  83:ULT.c         **** }
+ 223              		.loc 1 83 0
+ 224 0169 81C48C01 		addl	$396, %esp
+ 224      0000
+ 225 016f 5B       		popl	%ebx
+ 226              		.cfi_restore 3
+ 227 0170 5E       		popl	%esi
+ 228              		.cfi_restore 6
+ 229 0171 5F       		popl	%edi
+ 230              		.cfi_restore 7
+ 231 0172 5D       		popl	%ebp
+ 232              		.cfi_restore 5
+ 233              	.LCFI4:
+ 234              		.cfi_def_cfa 4, 4
+ 235 0173 C3       		ret
+ 236              		.cfi_endproc
+ 237              	.LFE2:
+ 239              	.globl ULT_DestroyThread
+ 241              	ULT_DestroyThread:
+ 242              	.LFB3:
+GAS LISTING /tmp/ccpIrlFj.s 			page 7
+
+
+  84:ULT.c         **** 
+  85:ULT.c         **** 
+  86:ULT.c         **** Tid ULT_DestroyThread(Tid tid)
+  87:ULT.c         **** {
+ 243              		.loc 1 87 0
+ 244              		.cfi_startproc
+ 245 0174 55       		pushl	%ebp
+ 246              	.LCFI5:
+ 247              		.cfi_def_cfa_offset 8
+ 248 0175 89E5     		movl	%esp, %ebp
+ 249              		.cfi_offset 5, -8
+ 250              	.LCFI6:
+ 251              		.cfi_def_cfa_register 5
+ 252 0177 83EC18   		subl	$24, %esp
+  88:ULT.c         ****   assert(0); /* TBD */
+ 253              		.loc 1 88 0
+ 254 017a C744240C 		movl	$__PRETTY_FUNCTION__.2797, 12(%esp)
+ 254      32000000 
+ 255 0182 C7442408 		movl	$88, 8(%esp)
+ 255      58000000 
+ 256 018a C7442404 		movl	$.LC0, 4(%esp)
+ 256      1C000000 
+ 257 0192 C7042422 		movl	$.LC1, (%esp)
+ 257      000000
+ 258 0199 E8FCFFFF 		call	__assert_fail
+ 258      FF
+ 259              		.cfi_endproc
+ 260              	.LFE3:
+ 262              	.globl fromQueue
+ 264              	fromQueue:
+ 265              	.LFB4:
+  89:ULT.c         ****   return ULT_FAILED;
+  90:ULT.c         **** }
+  91:ULT.c         **** 
+  92:ULT.c         **** struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
+  93:ULT.c         **** {
+ 266              		.loc 1 93 0
+ 267              		.cfi_startproc
+ 268 019e 55       		pushl	%ebp
+ 269              	.LCFI7:
+ 270              		.cfi_def_cfa_offset 8
+ 271 019f 89E5     		movl	%esp, %ebp
+ 272              		.cfi_offset 5, -8
+ 273              	.LCFI8:
+ 274              		.cfi_def_cfa_register 5
+ 275 01a1 83EC28   		subl	$40, %esp
+  94:ULT.c         ****        // struct ThrdCtlBlk *tempBlock;
+  95:ULT.c         ****        struct ThrdCtlBlk *tempBlock;
+  96:ULT.c         ****        /*allocate memory */
+  97:ULT.c         ****        tempBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
+ 276              		.loc 1 97 0
+ 277 01a4 C7042468 		movl	$360, (%esp)
+ 277      010000
+ 278 01ab E8FCFFFF 		call	malloc
+ 278      FF
+ 279 01b0 8945F4   		movl	%eax, -12(%ebp)
+  98:ULT.c         ****        tempBlock=*queueHead;
+GAS LISTING /tmp/ccpIrlFj.s 			page 8
+
+
+ 280              		.loc 1 98 0
+ 281 01b3 8B450C   		movl	12(%ebp), %eax
+ 282 01b6 8B00     		movl	(%eax), %eax
+ 283 01b8 8945F4   		movl	%eax, -12(%ebp)
+  99:ULT.c         **** 
+ 100:ULT.c         **** 	  while(tempBlock!=NULL)
+ 284              		.loc 1 100 0
+ 285 01bb EB1B     		jmp	.L10
+ 286              	.L13:
+ 101:ULT.c         ****           {
+ 102:ULT.c         ****         	if(tempBlock->tid==searchTid)
+ 287              		.loc 1 102 0
+ 288 01bd 8B45F4   		movl	-12(%ebp), %eax
+ 289 01c0 8B00     		movl	(%eax), %eax
+ 290 01c2 3B4508   		cmpl	8(%ebp), %eax
+ 291 01c5 7505     		jne	.L11
+ 103:ULT.c         **** 		{
+ 104:ULT.c         **** 			return tempBlock; 
+ 292              		.loc 1 104 0
+ 293 01c7 8B45F4   		movl	-12(%ebp), %eax
+ 294 01ca EB15     		jmp	.L12
+ 295              	.L11:
+ 105:ULT.c         **** 		}
+ 106:ULT.c         ****     		else
+ 107:ULT.c         **** 		{
+ 108:ULT.c         **** 			tempBlock=tempBlock->tcbPointerTail;
+ 296              		.loc 1 108 0
+ 297 01cc 8B45F4   		movl	-12(%ebp), %eax
+ 298 01cf 8B806401 		movl	356(%eax), %eax
+ 298      0000
+ 299 01d5 8945F4   		movl	%eax, -12(%ebp)
+ 300              	.L10:
+ 100:ULT.c         **** 	  while(tempBlock!=NULL)
+ 301              		.loc 1 100 0 discriminator 1
+ 302 01d8 837DF400 		cmpl	$0, -12(%ebp)
+ 303 01dc 75DF     		jne	.L13
+ 109:ULT.c         **** 		}
+ 110:ULT.c         ****           }
+ 111:ULT.c         ****   //this will not be a correct tcb. needs fix		
+ 112:ULT.c         ****   return tempBlock;
+ 304              		.loc 1 112 0
+ 305 01de 8B45F4   		movl	-12(%ebp), %eax
+ 306              	.L12:
+ 113:ULT.c         ****            	
+ 114:ULT.c         **** }
+ 307              		.loc 1 114 0
+ 308 01e1 C9       		leave
+ 309              		.cfi_restore 5
+ 310              	.LCFI9:
+ 311              		.cfi_def_cfa 4, 4
+ 312 01e2 C3       		ret
+ 313              		.cfi_endproc
+ 314              	.LFE4:
+ 316              		.section	.rodata
+ 319              	__PRETTY_FUNCTION__.2797:
+ 320 0032 554C545F 		.string	"ULT_DestroyThread"
+ 320      44657374 
+GAS LISTING /tmp/ccpIrlFj.s 			page 9
+
+
+ 320      726F7954 
+ 320      68726561 
+ 320      6400
+ 323              	__PRETTY_FUNCTION__.2787:
+ 324 0044 554C545F 		.string	"ULT_CreateThread"
+ 324      43726561 
+ 324      74655468 
+ 324      72656164 
+ 324      00
+ 325              		.text
+ 326              	.Letext0:
+GAS LISTING /tmp/ccpIrlFj.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ULT.c
+     /tmp/ccpIrlFj.s:15     .rodata:0000000000000000 ULT_ANY
+     /tmp/ccpIrlFj.s:20     .rodata:0000000000000004 ULT_SELF
+     /tmp/ccpIrlFj.s:25     .rodata:0000000000000008 ULT_INVALID
+     /tmp/ccpIrlFj.s:30     .rodata:000000000000000c ULT_NONE
+     /tmp/ccpIrlFj.s:35     .rodata:0000000000000010 ULT_NOMORE
+     /tmp/ccpIrlFj.s:40     .rodata:0000000000000014 ULT_NOMEMORY
+     /tmp/ccpIrlFj.s:45     .rodata:0000000000000018 ULT_FAILED
+     /tmp/ccpIrlFj.s:52     .bss:0000000000000000 queueHead
+     /tmp/ccpIrlFj.s:58     .bss:0000000000000004 universalTid
+     /tmp/ccpIrlFj.s:64     .bss:0000000000000008 runningThread
+     /tmp/ccpIrlFj.s:74     .text:0000000000000000 ULT_CreateThread
+     /tmp/ccpIrlFj.s:323    .rodata:0000000000000044 __PRETTY_FUNCTION__.2787
+     /tmp/ccpIrlFj.s:102    .text:000000000000002a ULT_Yield
+     /tmp/ccpIrlFj.s:264    .text:000000000000019e fromQueue
+     /tmp/ccpIrlFj.s:241    .text:0000000000000174 ULT_DestroyThread
+     /tmp/ccpIrlFj.s:319    .rodata:0000000000000032 __PRETTY_FUNCTION__.2797
+
+UNDEFINED SYMBOLS
+__assert_fail
+malloc
+getcontext
+setcontext
+puts
