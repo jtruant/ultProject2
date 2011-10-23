@@ -158,6 +158,11 @@ struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct 
 			{
 			  *queueHead=(*queueHead)->tcbPointerTail;
 			}
+			else
+			{
+		 	  tempBlock->tcbPointerHead->tcbPointerTail=tempBlock->tcbPointerTail;
+			  tempBlock->tcbPointerTail->tcbPointerHead=tempBlock->tcbPointerHead;
+			}
 			free(tempBlock);
 			return retBlock; 
 		}
