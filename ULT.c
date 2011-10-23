@@ -14,6 +14,8 @@ struct ThrdCtlBlk *queueTail=NULL;
 Tid universalTid=0;
 //currently running thread
 Tid runningThread=0;
+Tid returnTid=0;
+Tid tidToRun=0;
 struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct ThrdCtlBlk *retBlock);
 void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk **queueTail, struct ThrdCtlBlk *pushBlock);
 
@@ -31,18 +33,28 @@ Tid ULT_Yield(Tid wantTid)
   if(wantTid>ULT_MAX_THREADS)
   {   
        /*The tid does not correspond to a valid thread*/ 
-     return ULT_INVALID; 
+     returnTid = ULT_INVALID;
+     tidToRun = 0;
+     wantTid=0;	 
   }
   else if((queueHead==NULL) && (wantTid==ULT_ANY))//if queue empty and ULT_any then no-op
   {
-       return ULT_NONE;
-  
+       returnTid = ULT_NONE;
+       tidToRun=0;
+       wantTid=0;
   }
   else if(wantTid == ULT_SELF)
   {
 	wantTid = runningThread;
+	tidToRun=0;
+	returnTid= runningThread;
   }
-   
+  else if(wantTid == ULT_ANY)
+  {    
+	returnTid=queueHead->tid;
+	tidToRun=queueHead->tid;
+	wantTid = queueHead->tid;
+  }  
   /*assert(0);  TBD */
   /*return ULT_FAILED;*/
   ucontext_t currThread;
@@ -63,7 +75,7 @@ Tid ULT_Yield(Tid wantTid)
   getcontext(&currThread);
   
   /*change instruction pointer JUMP*/
-  currThread.uc_mcontext.gregs[REG_EIP]=currThread.uc_mcontext.gregs[REG_EIP]+164;
+  currThread.uc_mcontext.gregs[REG_EIP]=currThread.uc_mcontext.gregs[REG_EIP]+166;
   currBlock->threadContext=currThread;
 
   /*stick thread(TCB) on the ready queue*/
@@ -73,13 +85,13 @@ Tid ULT_Yield(Tid wantTid)
   struct ThrdCtlBlk *setBlock;
   setBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
   
-  setBlock=fromQueue(wantTid,&queueHead,retBlock); 
+  setBlock=fromQueue(tidToRun,&queueHead,retBlock); 
   currThread=setBlock->threadContext;
   setcontext(&currThread);
   printf("Jump barrier \n");
   runningThread=setBlock->tid;
   
-  return runningThread;
+  return returnTid;
   
   
  
