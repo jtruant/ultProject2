@@ -9,12 +9,13 @@
 #include <ucontext.h>
 #include "ULT.h"
 struct ThrdCtlBlk *queueHead=NULL;
+struct ThrdCtlBlk *queueTail=NULL;
 //number of existing threads
 Tid universalTid=0;
 //currently running thread
 Tid runningThread=0;
 struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead);
-void pushQueue(struct ThrdCtlBlk ** queueHead, struct ThrdCtlBlk *pushBlock);
+void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk **queueTail, struct ThrdCtlBlk *pushBlock);
 
 Tid 
 ULT_CreateThread(void (*fn)(void *), void *parg)
@@ -61,7 +62,7 @@ Tid ULT_Yield(Tid wantTid)
   currBlock->threadContext=currThread;
 
   /*stick thread(TCB) on the ready queue*/
-  pushQueue(&queueHead,currBlock);
+  pushQueue(&queueHead,&queueTail,currBlock);
    
   /*decide on new thread to run*/
   struct ThrdCtlBlk *setBlock;
@@ -112,10 +113,18 @@ struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
            	
 }
 
-void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk *pushBlock)
+void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk ** queueTail, struct ThrdCtlBlk *pushBlock)
 {
+	if(queueHead==NULL)
+	{
+		*queueHead=pushBlock;
+		 queueTail=queueHead;
+	}
+	else
+ 	{
 	pushBlock->tcbPointerTail=*queueHead;
-	pushBlock->tcbPointerHead=queueHead;
+	//pushBlock->tcbPointerHead=queueHead;
 	*queueHead=pushBlock;	
+	}
 }
 
