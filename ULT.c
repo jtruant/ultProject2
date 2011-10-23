@@ -14,7 +14,7 @@ struct ThrdCtlBlk *queueTail=NULL;
 Tid universalTid=0;
 //currently running thread
 Tid runningThread=0;
-struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead);
+struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct ThrdCtlBlk *retBlock);
 void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk **queueTail, struct ThrdCtlBlk *pushBlock);
 
 Tid 
@@ -54,11 +54,16 @@ Tid ULT_Yield(Tid wantTid)
   currBlock->tid=universalTid;
   currBlock->tcbPointerTail=NULL;
   currBlock->tcbPointerHead=NULL;
+  /*build TCB for returning from queue*/
+  struct ThrdCtlBlk *retBlock;
+  retBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
+  retBlock->tcbPointerTail=NULL;
+  retBlock->tcbPointerHead=NULL;
   /*get context and set the context of the tcb to that context*/ 
   getcontext(&currThread);
   
   /*change instruction pointer JUMP*/
-  currThread.uc_mcontext.gregs[REG_EIP]=currThread.uc_mcontext.gregs[REG_EIP]+162;
+  currThread.uc_mcontext.gregs[REG_EIP]=currThread.uc_mcontext.gregs[REG_EIP]+164;
   currBlock->threadContext=currThread;
 
   /*stick thread(TCB) on the ready queue*/
@@ -68,7 +73,7 @@ Tid ULT_Yield(Tid wantTid)
   struct ThrdCtlBlk *setBlock;
   setBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
   
-  setBlock=fromQueue(wantTid,&queueHead); 
+  setBlock=fromQueue(wantTid,&queueHead,retBlock); 
   currThread=setBlock->threadContext;
   setcontext(&currThread);
   printf("Jump barrier \n");
@@ -87,7 +92,7 @@ Tid ULT_DestroyThread(Tid tid)
   return ULT_FAILED;
 }
 
-struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
+struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct ThrdCtlBlk *retBlock)
 {
        //pointer to ThrdCtlBlk
 	struct ThrdCtlBlk *tempBlock;
@@ -101,7 +106,10 @@ struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
         	if(tempBlock->tid==searchTid)
 		{       
                        // tempBlock->tcbPointerHead->
-			return tempBlock; 
+			retBlock->tid=tempBlock->tid;
+			retBlock->threadContext=tempBlock->threadContext;
+			free(tempBlock);
+			return retBlock; 
 		}
     		else
 		{
