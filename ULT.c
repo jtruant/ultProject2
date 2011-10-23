@@ -108,6 +108,12 @@ struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct 
                        // tempBlock->tcbPointerHead->
 			retBlock->tid=tempBlock->tid;
 			retBlock->threadContext=tempBlock->threadContext;
+			
+			/*adjust pointers referencing tempBlock*/
+			if(tempBlock->tcbPointerHead==NULL)
+			{
+			  *queueHead=(*queueHead)->tcbPointerTail;
+			}
 			free(tempBlock);
 			return retBlock; 
 		}
