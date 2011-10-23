@@ -18,7 +18,7 @@ Tid returnTid=0;
 Tid tidToRun=0;
 struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct ThrdCtlBlk *retBlock);
 void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk **queueTail, struct ThrdCtlBlk *pushBlock);
-
+int validTid(Tid searchTid, struct ThrdCtlBlk **queueHead);
 Tid 
 ULT_CreateThread(void (*fn)(void *), void *parg)
 {
@@ -55,8 +55,14 @@ Tid ULT_Yield(Tid wantTid)
 	tidToRun=queueHead->tid;
 	wantTid = queueHead->tid;
   }  
-  /*assert(0);  TBD */
-  /*return ULT_FAILED;*/
+  else if((wantTid!=0)&&(!validTid(wantTid,&queueHead)))//check to see if tid is a valid available tid
+  {
+        returnTid=ULT_INVALID;
+        tidToRun=0;
+	wantTid=0; 
+  }
+  
+  /*declare context variable*/
   ucontext_t currThread;
 
   /*build TCB*/
@@ -87,6 +93,9 @@ Tid ULT_Yield(Tid wantTid)
   
   setBlock=fromQueue(tidToRun,&queueHead,retBlock); 
   currThread=setBlock->threadContext;
+  /*
+  *set context
+  */
   setcontext(&currThread);
   printf("Jump barrier \n");
   runningThread=setBlock->tid;
@@ -102,6 +111,29 @@ Tid ULT_DestroyThread(Tid tid)
 {
   assert(0); /* TBD */
   return ULT_FAILED;
+}
+
+/*method to check if requested tid is valid*/
+int validTid(Tid searchTid, struct ThrdCtlBlk **queueHead)
+{
+     struct ThrdCtlBlk *cycleBlock;
+     //allocate memory for cycleBlock
+     cycleBlock=(struct ThrdCtlBlk*)malloc(sizeof(ThrdCtlBlk));
+     cycleBlock=*queueHead;
+     while(cycleBlock!=NULL)
+     {
+	if(cycleBlock->tid==searchTid)
+	{ 
+           free(cycleBlock);
+	   return 1;	
+	}
+	else
+	{
+	   cycleBlock=cycleBlock->tcbPointerTail;
+	}
+     }  
+	free(cycleBlock);
+	return 0;
 }
 
 struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead,struct ThrdCtlBlk *retBlock)
