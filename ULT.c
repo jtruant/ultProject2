@@ -115,7 +115,7 @@ struct ThrdCtlBlk *fromQueue(Tid searchTid,struct ThrdCtlBlk **queueHead)
 void pushQueue(struct ThrdCtlBlk ** queueHead,struct ThrdCtlBlk *pushBlock)
 {
 	pushBlock->tcbPointerTail=*queueHead;
-//	pushBlock->tcbPointerHead=queueHead;
+	pushBlock->tcbPointerHead=queueHead;
 	*queueHead=pushBlock;	
 }
 
